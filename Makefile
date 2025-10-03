@@ -30,7 +30,7 @@ db-migrate-down:
 run:
 	go run main.go
 grpcurl-shops:
-	grpcurl -plaintext localhost:58080 bcrd.bcrdService.GetShops
+	grpcurl -plaintext localhost:58080 bcrd.BcrdService.GetShops
 main-branch:
 	git switch main
 	git branch | grep -v "main" | xargs git branch -d

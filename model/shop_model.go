@@ -11,30 +11,20 @@ import (
 )
 
 type Shop struct {
-	ID                         int64
-	EventID                    int64
-	CategoryID                 int64
-	No                         int32
-	ShopName                   string
-	MenuName                   string
-	Phone                      string
-	Address                    string
-	BusinessDays               string
-	RegularHoliday             string
-	BusinessHours              string
-	ChargePrice                string
-	NormalizedChargePrice      int32
-	SinglePrice                string
-	NormalizedSinglePrice      int32
-	SetPrice                   string
-	NormalizedSetPrice         int32
-	BeerType                   string
-	NeedsReservation           string
-	NormalizedNeedsReservation bool
-	UseHachipay                string
-	NormalizedUseHachipay      bool
-	IsOpenHoliday              bool
-	IsIrregularHoliday         bool
+	ID                 int64
+	EventID            int64
+	No                 int32
+	ShopName           string
+	ImageUrl           string
+	GoogleUrl          string
+	TabelogUrl         string
+	OfficialUrl        string
+	InstagramUrl       string
+	Address            string
+	BusinessDays       string
+	RegularHoliday     string
+	IsOpenHoliday      bool
+	IsIrregularHoliday bool
 }
 
 type ShopsLocation struct {
@@ -56,43 +46,31 @@ type ShopsTime struct {
 }
 
 type ShopDetail struct {
-	ID                         int64
-	EventID                    int64
-	Year                       int32
-	CategoryID                 int64
-	CategoryName               string
-	No                         int32
-	ShopName                   string
-	MenuName                   string
-	MenuImageUrl               string
-	Phone                      string
-	Address                    string
-	BusinessDays               string
-	RegularHoliday             string
-	BusinessHours              string
-	ChargePrice                string
-	NormalizedChargePrice      int32
-	SinglePrice                string
-	NormalizedSinglePrice      int32
-	SetPrice                   string
-	NormalizedSetPrice         int32
-	BeerType                   string
-	NeedsReservation           string
-	NormalizedNeedsReservation bool
-	UseHachipay                string
-	NormalizedUseHachipay      bool
-	IsOpenHoliday              bool
-	IsIrregularHoliday         bool
-	Latitude                   float64
-	Longitude                  float64
-	Distance                   float64
-	WeekNumber                 int32
-	DayOfWeek                  time.Weekday
-	StartTime                  string
-	EndTime                    string
-	IsHoliday                  bool
-	InCurrentSales             bool
-	NumberOfTimes              int32
+	ID                 int64
+	EventID            int64
+	Year               int32
+	No                 int32
+	ShopName           string
+	ImageUrl           string
+	GoogleUrl          string
+	TabelogUrl         string
+	OfficialUrl        string
+	InstagramUrl       string
+	Address            string
+	BusinessDays       string
+	RegularHoliday     string
+	IsOpenHoliday      bool
+	IsIrregularHoliday bool
+	Latitude           float64
+	Longitude          float64
+	Distance           float64
+	WeekNumber         int32
+	DayOfWeek          time.Weekday
+	StartTime          string
+	EndTime            string
+	IsHoliday          bool
+	InCurrentSales     bool
+	NumberOfTimes      int32
 }
 
 type ShopsResult []ShopDetail
@@ -123,8 +101,6 @@ const (
 	SearchTypeInCurrentSales = iota
 	SearchTypeNotYet
 	SearchTypeIrregularHoliday
-	SearchTypeNeedsReservation
-	SearchTypeBeerCocktail
 )
 
 // sort order
@@ -161,28 +137,16 @@ func (m *ShopModel) FindShops(time *time.Time, userId string, year int32, keywor
 		shops.id,
 		shops.event_id,
 		events.year,
-		shops.category_id,
-		categories.name AS category_name,
 		shops.no,
 		shops.shop_name,
-		shops.menu_name,
-		shops.menu_image_url,
-		shops.phone,
+		shops.image_url,
+		shops.google_url,
+		shops.tabelog_url,
+		shops.official_url,
+		shops.instagram_url,
 		shops.address,
 		shops.business_days,
 		shops.regular_holiday,
-		shops.business_hours,
-		shops.charge_price,
-		shops.normalized_charge_price,
-		shops.single_price,
-		shops.normalized_single_price,
-		shops.set_price,
-		shops.normalized_set_price,
-		shops.beer_type,
-		shops.needs_reservation,
-		shops.normalized_needs_reservation,
-		shops.use_hachipay,
-		shops.normalized_use_hachipay,
 		shops.is_open_holiday,
 		shops.is_irregular_holiday,
 		shops_location.latitude,
@@ -233,7 +197,6 @@ func (m *ShopModel) FindShops(time *time.Time, userId string, year int32, keywor
 		Model(&Shop{}).
 		Select(fields).
 		Joins("INNER JOIN events ON shops.event_id = events.id").
-		Joins("INNER JOIN categories ON shops.category_id = categories.id").
 		Joins("INNER JOIN shops_location ON shops.id = shops_location.shop_id").
 		Joins("LEFT JOIN (SELECT shop_id, week_number, day_of_week, start_time, end_time, is_holiday FROM shops_time WHERE "+shopsTimeTodayCondition+") AS shops_time_day ON shops.id = shops_time_day.shop_id", todayWeekNum, todayDayOfWeek, nowTime, nowTime).
 		Joins("LEFT JOIN (SELECT shop_id, week_number, day_of_week, start_time, end_time, is_holiday FROM shops_time WHERE "+shopsTimeTomorrowCondition+") AS shops_time_night ON shops.id = shops_time_night.shop_id", tomorrowWeekNum, tomorrowDayOfWeek, nowTime, nowTime, nowTime).
@@ -255,20 +218,12 @@ func (m *ShopModel) FindShops(time *time.Time, userId string, year int32, keywor
 	if slices.Contains(searchParams, SearchTypeIrregularHoliday) {
 		query = query.Where("shops.is_irregular_holiday = ?", true)
 	}
-	// 予約が必要な店舗で絞り込む
-	if slices.Contains(searchParams, SearchTypeNeedsReservation) {
-		query = query.Where("shops.normalized_needs_reservation = ?", true)
-	}
-	// ビールカクテルがある店舗で絞り込む
-	if slices.Contains(searchParams, SearchTypeBeerCocktail) {
-		query = query.Where("shops.category_id = ?", CATEGORY_BEER_COCKTAIL)
-	}
 	// キーワード検索
 	if len(keywordParams) > 0 {
 		keywordQuery := m.db.Conn.Or("")
 		for _, keyword := range keywordParams {
-			keywordQuery = keywordQuery.Or("sf_translate_case(shops.no) LIKE ? || sf_translate_case(?) || ? OR sf_translate_case(shops.shop_name) LIKE ? || sf_translate_case(?) || ? OR sf_translate_case(shops.menu_name) LIKE ? || sf_translate_case(?) || ?",
-				"%", keyword, "%", "%", keyword, "%", "%", keyword, "%")
+			keywordQuery = keywordQuery.Or("sf_translate_case(shops.no) LIKE ? || sf_translate_case(?) || ? OR sf_translate_case(shops.shop_name) LIKE ? || sf_translate_case(?) || ?",
+				"%", keyword, "%", "%", keyword, "%")
 		}
 		query = query.Where(keywordQuery)
 	}
@@ -303,28 +258,16 @@ func (m *ShopModel) FindShop(time *time.Time, userId string, shopId int64) (*Sho
 		shops.id,
 		shops.event_id,
 		events.year,
-		shops.category_id,
-		categories.name AS category_name,
 		shops.no,
 		shops.shop_name,
-		shops.menu_name,
-		shops.menu_image_url,
-		shops.phone,
+		shops.image_url,
+		shops.google_url,
+		shops.tabelog_url,
+		shops.official_url,
+		shops.instagram_url,
 		shops.address,
 		shops.business_days,
 		shops.regular_holiday,
-		shops.business_hours,
-		shops.charge_price,
-		shops.normalized_charge_price,
-		shops.single_price,
-		shops.normalized_single_price,
-		shops.set_price,
-		shops.normalized_set_price,
-		shops.beer_type,
-		shops.needs_reservation,
-		shops.normalized_needs_reservation,
-		shops.use_hachipay,
-		shops.normalized_use_hachipay,
 		shops.is_open_holiday,
 		shops.is_irregular_holiday,
 		shops_location.latitude,
@@ -373,7 +316,6 @@ func (m *ShopModel) FindShop(time *time.Time, userId string, shopId int64) (*Sho
 		Model(&Shop{}).
 		Select(fields).
 		Joins("INNER JOIN events ON shops.event_id = events.id").
-		Joins("INNER JOIN categories ON shops.category_id = categories.id").
 		Joins("INNER JOIN shops_location ON shops.id = shops_location.shop_id").
 		Joins("LEFT JOIN shops_time AS shops_time_day ON shops.id = shops_time_day.shop_id AND "+shopsTimeTodayCondition+"",
 			todayWeekNum, todayDayOfWeek, nowTime, nowTime).

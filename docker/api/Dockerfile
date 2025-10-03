@@ -1,4 +1,4 @@
-FROM golang:1.23.4-alpine3.21 AS base
+FROM golang:1.25.1-alpine3.22 AS base
 WORKDIR /go/src/app
 RUN apk update
 RUN apk --no-cache add curl

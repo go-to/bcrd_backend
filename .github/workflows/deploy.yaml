@@ -22,7 +22,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /opt/egp/egp_backend/
+            cd /opt/bcrd/bcrd_backend/
             git pull origin main
 
       # マイグレーション実行
@@ -34,7 +34,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /opt/egp/egp_backend/
+            cd /opt/bcrd/bcrd_backend/
             make db-migrate-up
 
       # アプリケーションの再ビルド
@@ -46,7 +46,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /opt/egp/egp_backend/
+            cd /opt/bcrd/bcrd_backend/
             sudo docker compose build api
 
       # アプリケーション再起動
@@ -58,5 +58,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /opt/egp/egp_backend/
+            cd /opt/bcrd/bcrd_backend/
             sudo docker compose up --no-deps -d api

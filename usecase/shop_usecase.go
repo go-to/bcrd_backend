@@ -5,11 +5,11 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/go-to/egp_backend/repository"
-	"github.com/go-to/egp_backend/usecase/input"
-	"github.com/go-to/egp_backend/usecase/output"
-	"github.com/go-to/egp_backend/util"
-	"github.com/go-to/egp_protobuf/pb"
+	"github.com/go-to/bcrd_backend/repository"
+	"github.com/go-to/bcrd_backend/usecase/input"
+	"github.com/go-to/bcrd_backend/usecase/output"
+	"github.com/go-to/bcrd_backend/util"
+	"github.com/go-to/bcrd_protobuf/pb"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )

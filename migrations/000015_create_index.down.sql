@@ -1,0 +1,10 @@
+DROP INDEX IF EXISTS idx_shops_event_id;
+DROP INDEX IF EXISTS idx_shops_location_shop_id;
+DROP INDEX IF EXISTS idx_shops_time_composite;
+DROP INDEX IF EXISTS idx_stamps_composite;
+DROP INDEX IF EXISTS idx_shops_event_year;
+DROP INDEX IF EXISTS idx_shops_no_name_menu;
+DROP INDEX IF EXISTS idx_shops_location_spatial;
+DROP INDEX IF EXISTS idx_shops_time_temporal;
+DROP INDEX IF EXISTS idx_shops_category_id;
+DROP INDEX IF EXISTS idx_stamps_user_id;

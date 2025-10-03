@@ -14,7 +14,7 @@ ARG GOOS=linux
 ARG GOARCH=amd64
 RUN go build -a -ldflags "-s -w" -trimpath -o main .
 
-EXPOSE 50051
+EXPOSE 50052
 
 FROM base AS local
 RUN go install github.com/air-verse/air@v1.61.5

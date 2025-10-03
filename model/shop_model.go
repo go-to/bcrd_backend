@@ -3,10 +3,11 @@ package model
 import (
 	"errors"
 	"fmt"
-	"github.com/go-to/egp_backend/util"
-	"gorm.io/gorm"
 	"slices"
 	"time"
+
+	"github.com/go-to/bcrd_backend/util"
+	"gorm.io/gorm"
 )
 
 type Shop struct {

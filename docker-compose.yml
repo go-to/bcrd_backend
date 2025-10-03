@@ -6,6 +6,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
+      PGPORT: 55432
       TZ: ${LOCATION_NAME}
       LANG: "ja_JP.UTF-8"
     build:
@@ -21,7 +22,7 @@ services:
       - "./docker/postgres/init:/docker-entrypoint-initdb.d"
       - "./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf"
     ports:
-      - "5432:5432"
+      - "55432:55432"
   api:
     container_name: api
     environment:
@@ -35,4 +36,4 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "50051:50051"
+      - "50052:50052"

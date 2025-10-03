@@ -1,12 +1,12 @@
 {
   "Servers": {
     "1": {
-      "Name": "egp",
+      "Name": "bcrd",
       "Group": "Servers",
       "Host": "postgres",
-      "Port": 5432,
-      "MaintenanceDB": "egp",
-      "Username": "egp_user",
+      "Port": 55432,
+      "MaintenanceDB": "bcrd",
+      "Username": "bcrd_user",
       "SSLMode": "prefer"
     }
   }

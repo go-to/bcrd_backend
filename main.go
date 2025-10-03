@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-to/egp_backend/model"
-	"github.com/go-to/egp_backend/repository"
-	"github.com/go-to/egp_backend/router"
-	"github.com/go-to/egp_backend/usecase"
-	"github.com/go-to/egp_backend/util"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/go-to/bcrd_backend/model"
+	"github.com/go-to/bcrd_backend/repository"
+	"github.com/go-to/bcrd_backend/router"
+	"github.com/go-to/bcrd_backend/usecase"
+	"github.com/go-to/bcrd_backend/util"
+	"github.com/joho/godotenv"
 )
 
 func main() {

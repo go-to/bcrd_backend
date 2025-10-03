@@ -10,7 +10,7 @@ tmp_dir = "tmp"
 pre_cmd = [
     "curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.0/migrate.linux-amd64.tar.gz | tar xvz",
     "mv ./migrate /usr/bin/migrate",
-    "migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=egp&sslmode=disable' -verbose up"
+    "migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=bcrd&sslmode=disable' -verbose up"
 ]
 # Just plain old shell command. You could use `make` as well.
 cmd = "go build -o ./tmp/main ."
@@ -84,4 +84,4 @@ keep_scroll = true
 # Enable live-reloading on the browser.
 enabled = true
 proxy_port = 8090
-app_port = 8080
+app_port = 58080

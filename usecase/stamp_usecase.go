@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	"github.com/go-to/egp_backend/repository"
-	"github.com/go-to/egp_backend/usecase/input"
-	"github.com/go-to/egp_backend/usecase/output"
-	"github.com/go-to/egp_protobuf/pb"
+	"github.com/go-to/bcrd_backend/repository"
+	"github.com/go-to/bcrd_backend/usecase/input"
+	"github.com/go-to/bcrd_backend/usecase/output"
+	"github.com/go-to/bcrd_protobuf/pb"
 )
 
 type IStampUsecase interface {

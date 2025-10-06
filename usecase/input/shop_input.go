@@ -1,6 +1,6 @@
 package input
 
-import "github.com/go-to/egp_protobuf/pb"
+import "github.com/go-to/bcrd_protobuf/pb"
 
 type ShopsTotalInput struct {
 	ShopsTotalRequest *pb.ShopsTotalRequest

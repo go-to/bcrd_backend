@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS egp.events;
+DROP TABLE IF EXISTS bcrd.events;

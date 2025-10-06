@@ -1,1 +1,0 @@
-INSERT INTO egp.events VALUES (1,'【第10回】恵比寿の料理人が考える！ヱビスビールに合う逸品グランプリ',2025,'2025-03-11 00:00:00','2025-05-07 23:59:59',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);

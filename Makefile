@@ -3,9 +3,9 @@ time=
 
 # env
 include .env
-DOCKER_CONTAINER_WEB=nginx
-DOCKER_CONTAINER_API=api
-DOCKER_CONTAINER_DB=postgres
+DOCKER_CONTAINER_WEB=bcrd_nginx
+DOCKER_CONTAINER_API=bcrd_api
+DOCKER_CONTAINER_DB=bcrd_postgres
 DB_HOST=localhost
 
 # cmd
@@ -24,13 +24,13 @@ logs-db:
 db-migrate-create:
 	migrate create -ext sql -dir migrations -seq ${name}
 db-migrate-up:
-	migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=egp&sslmode=disable' -verbose up
+	migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=bcrd&sslmode=disable' -verbose up
 db-migrate-down:
-	migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=egp&sslmode=disable' -verbose down
+	migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=bcrd&sslmode=disable' -verbose down
 run:
 	go run main.go
 grpcurl-shops:
-	grpcurl -plaintext localhost:8080 egp.EgpService.GetShops
+	grpcurl -plaintext localhost:58080 bcrd.BcrdService.GetShops
 main-branch:
 	git switch main
 	git branch | grep -v "main" | xargs git branch -d
@@ -42,7 +42,7 @@ develop-branch:
 update-gomod:
 	go clean -cache -modcache -i -r
 	go mod download
-	go get -u github.com/go-to/egp_protobuf/pb@latest
+	go get -u github.com/go-to/bcrd_protobuf/pb@latest
 	go get -u
 	go mod tidy
 # e.x.) make debug-time time='2025-03-11 19:00:00'

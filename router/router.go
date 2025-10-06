@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/go-to/egp_backend/usecase"
-	"github.com/go-to/egp_backend/usecase/input"
-	"github.com/go-to/egp_protobuf/pb"
+	"github.com/go-to/bcrd_backend/usecase"
+	"github.com/go-to/bcrd_backend/usecase/input"
+	"github.com/go-to/bcrd_protobuf/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -20,7 +20,7 @@ import (
 )
 
 type Server struct {
-	pb.UnimplementedEgpServiceServer
+	pb.UnimplementedBcrdServiceServer
 	Usecase Usecase
 }
 
@@ -37,7 +37,7 @@ func New(port int, u Usecase) {
 
 	s := grpc.NewServer()
 
-	pb.RegisterEgpServiceServer(s, NewServer(u))
+	pb.RegisterBcrdServiceServer(s, NewServer(u))
 
 	reflection.Register(s)
 

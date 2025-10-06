@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/go-to/egp_backend/util"
 	"time"
+
+	"github.com/go-to/bcrd_backend/util"
 )
 
 type Config struct {

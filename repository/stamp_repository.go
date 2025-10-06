@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/go-to/egp_backend/model"
 	"time"
+
+	"github.com/go-to/bcrd_backend/model"
 )
 
 type IStampRepository interface {

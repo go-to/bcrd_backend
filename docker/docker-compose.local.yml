@@ -8,9 +8,9 @@ services:
   nginx:
     image: nginx:1.28
     platform: linux/amd64
-    container_name: nginx
+    container_name: bcrd_nginx
     ports:
-      - "8080:8080"
+      - "58080:58080"
     volumes:
       - "./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
     links:
@@ -25,7 +25,7 @@ services:
       - ./db/pgadmin:/var/lib/pgadmin
       - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
     environment:
-      PGADMIN_DEFAULT_EMAIL: egp@example.com
+      PGADMIN_DEFAULT_EMAIL: bcrd@example.com
       PGADMIN_DEFAULT_PASSWORD: password
       PGADMIN_CONFIG_SERVER_MODE: "True"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "True"

@@ -3,9 +3,9 @@ time=
 
 # env
 include .env
-DOCKER_CONTAINER_WEB=nginx
-DOCKER_CONTAINER_API=api
-DOCKER_CONTAINER_DB=postgres
+DOCKER_CONTAINER_WEB=bcrd_nginx
+DOCKER_CONTAINER_API=bcrd_api
+DOCKER_CONTAINER_DB=bcrd_postgres
 DB_HOST=localhost
 
 # cmd

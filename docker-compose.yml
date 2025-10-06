@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: postgres
+    container_name: bcrd_postgres
     command: -c 'config_file=/etc/postgresql/postgresql.conf'
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -24,7 +24,7 @@ services:
     ports:
       - "55432:55432"
   api:
-    container_name: api
+    container_name: bcrd_api
     environment:
       TZ: ${LOCATION_NAME}
     build:

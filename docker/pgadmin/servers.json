@@ -3,7 +3,7 @@
     "1": {
       "Name": "bcrd",
       "Group": "Servers",
-      "Host": "postgres",
+      "Host": "bcrd_postgres",
       "Port": 55432,
       "MaintenanceDB": "bcrd",
       "Username": "bcrd_user",

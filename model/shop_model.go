@@ -25,6 +25,7 @@ type Shop struct {
 	RegularHoliday     string
 	IsOpenHoliday      bool
 	IsIrregularHoliday bool
+	PlaceID            string
 }
 
 type ShopsLocation struct {
@@ -71,6 +72,7 @@ type ShopDetail struct {
 	IsHoliday          bool
 	InCurrentSales     bool
 	NumberOfTimes      int32
+	PlaceID            string
 }
 
 type ShopsResult []ShopDetail
@@ -178,7 +180,8 @@ func (m *ShopModel) FindShops(time *time.Time, userId string, year int32, keywor
 			WHEN shops_time_night.is_holiday IS NOT NULL THEN shops_time_night.is_holiday
 			ELSE NULL
 		END AS is_holiday,
-		stamps.number_of_times
+		stamps.number_of_times,
+		shops.place_id
 	`
 
 	// 検索条件で指定する週番号、曜日、時刻の情報を取得
@@ -299,7 +302,8 @@ func (m *ShopModel) FindShop(time *time.Time, userId string, shopId int64) (*Sho
 			WHEN shops_time_night.is_holiday IS NOT NULL THEN shops_time_night.is_holiday
 			ELSE NULL
 		END AS is_holiday,
-		stamps.number_of_times
+		stamps.number_of_times,
+		shops.place_id
 	`
 
 	// 検索条件で指定する週番号、曜日、時刻の情報を取得

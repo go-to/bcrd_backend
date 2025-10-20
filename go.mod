@@ -3,10 +3,10 @@ module github.com/go-to/bcrd_backend
 go 1.24.0
 
 require (
-	github.com/go-to/bcrd_protobuf/pb v0.0.0-20251003084236-65949873dfe9
+	github.com/go-to/bcrd_protobuf/pb v0.0.0-20251020152420-36cce6e0ff2f
 	github.com/joho/godotenv v1.5.1
-	golang.org/x/text v0.29.0
-	google.golang.org/grpc v1.75.1
+	golang.org/x/text v0.30.0
+	google.golang.org/grpc v1.76.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.0
 )
@@ -18,10 +18,10 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
-	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/crypto v0.43.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251014184007-4626949a642f // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )

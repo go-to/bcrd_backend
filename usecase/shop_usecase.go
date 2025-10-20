@@ -2,8 +2,11 @@ package usecase
 
 import (
 	"fmt"
+	"net/http"
 	"slices"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/go-to/bcrd_backend/repository"
 	"github.com/go-to/bcrd_backend/usecase/input"
@@ -122,6 +125,36 @@ func (u *ShopUsecase) GetShops(in *input.ShopsInput) (*output.ShopsOutput, error
 		return &output.ShopsOutput{}, err
 	}
 
+	// PlaceIDで先にループして画像情報を取得
+	var client = &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConns:        200,
+			MaxConnsPerHost:     200,
+			MaxIdleConnsPerHost: 200,
+			IdleConnTimeout:     90 * time.Second,
+			DisableCompression:  false,
+			ForceAttemptHTTP2:   true,
+		},
+		Timeout: 10 * time.Second,
+	}
+
+	photoURLsMap := map[int64]string{}
+	stringStream := make(chan string)
+	var wg sync.WaitGroup
+	for _, v := range *shops {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			photoURL, err := util.GetPlaceDetails(client, v.PlaceID)
+			if err != nil {
+				return
+			}
+			stringStream <- photoURL
+		}()
+		photoURLsMap[v.ID] = <-stringStream
+	}
+	wg.Wait()
+
 	var outputShops []*pb.Shop
 	var latLonList []string
 
@@ -148,13 +181,16 @@ func (u *ShopUsecase) GetShops(in *input.ShopsInput) (*output.ShopsOutput, error
 			isStamped = true
 		}
 
+		// 画像
+		imageUrl := photoURLsMap[v.ID]
+
 		outputShops = append(outputShops, &pb.Shop{
 			Id:                 v.ID,
 			EventId:            v.EventID,
 			Year:               v.Year,
 			No:                 v.No,
 			ShopName:           v.ShopName,
-			ImageUrl:           v.ImageUrl,
+			ImageUrl:           imageUrl,
 			GoogleUrl:          v.GoogleUrl,
 			TabelogUrl:         v.TabelogUrl,
 			OfficialUrl:        v.OfficialUrl,
@@ -175,6 +211,7 @@ func (u *ShopUsecase) GetShops(in *input.ShopsInput) (*output.ShopsOutput, error
 			InCurrentSales:     inCurrentSales,
 			NumberOfTimes:      v.NumberOfTimes,
 			IsStamped:          isStamped,
+			PlaceId:            v.PlaceID,
 		})
 	}
 
@@ -248,6 +285,7 @@ func (u *ShopUsecase) GetShop(in *input.ShopInput) (*output.ShopOutput, error) {
 			InCurrentSales:     inCurrentSales,
 			NumberOfTimes:      shop.NumberOfTimes,
 			IsStamped:          isStamped,
+			PlaceId:            shop.PlaceID,
 		}
 	}
 

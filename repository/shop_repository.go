@@ -10,6 +10,9 @@ type IShopRepository interface {
 	GetShopsTotal(year int32) (int64, error)
 	GetShops(time *time.Time, userId string, year int32, keywordParams []string, searchParams []int32, orderParam int32, latitude, longitude float64) (*model.ShopsResult, error)
 	GetShop(time *time.Time, userId string, shopId int64) (*model.ShopDetail, error)
+	GetShopsByYear(year int32) (*model.Shops, error)
+	UpdateShopsImage(shopID int64, imageURLs []string) error
+	GetShopsImage(year int32) (*model.ShopsImages, error)
 }
 
 type ShopRepository struct {
@@ -30,4 +33,16 @@ func (r *ShopRepository) GetShops(time *time.Time, userId string, year int32, ke
 
 func (r *ShopRepository) GetShop(time *time.Time, userId string, shopId int64) (*model.ShopDetail, error) {
 	return r.model.FindShop(time, userId, shopId)
+}
+
+func (r *ShopRepository) GetShopsByYear(year int32) (*model.Shops, error) {
+	return r.model.FindShopsByYear(year)
+}
+
+func (r *ShopRepository) UpdateShopsImage(shopID int64, imageURLs []string) error {
+	return r.model.UpdateShopsImage(shopID, imageURLs)
+}
+
+func (r *ShopRepository) GetShopsImage(year int32) (*model.ShopsImages, error) {
+	return r.model.FindShopsImage(year)
 }

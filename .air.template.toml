@@ -10,18 +10,18 @@ tmp_dir = "tmp"
 pre_cmd = [
     "curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.0/migrate.linux-amd64.tar.gz | tar xvz",
     "mv ./migrate /usr/bin/migrate",
-    "migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=bcrd&sslmode=disable' -verbose up"
+    "migrate -path migrations -database 'postgresql://bcrd_user:password@postgres:55432/bcrd?search_path=bcrd&sslmode=disable' -verbose up"
 ]
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./tmp/main ."
+cmd = "go build -o ./tmp/bcrd ."
 # Array of commands to run after ^C
 post_cmd = []
 # Binary file yields from `cmd`.
-bin = "tmp/main"
+bin = "tmp/bcrd"
 # Customize binary, can setup environment variables when run your app.
-full_bin = "APP_ENV=dev APP_USER=air ./tmp/main"
-# Add additional arguments when running binary (bin/full_bin). Will run './tmp/main hello world'.
-args_bin = ["hello", "world"]
+full_bin = "APP_ENV=dev APP_USER=air ./tmp/bcrd"
+# Add additional arguments when running binary (bin/full_bin). Will run './tmp/bcrd hello world'.
+args_bin = ["serve"]
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html"]
 # Ignore these filename extensions or directories.
@@ -53,7 +53,7 @@ send_interrupt = false
 # Delay after sending Interrupt signal
 kill_delay = 500 # nanosecond
 # Rerun binary or not
-rerun = false
+rerun = falseshops
 # Delay after each execution
 rerun_delay = 500
 

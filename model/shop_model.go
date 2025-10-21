@@ -46,6 +46,12 @@ type ShopsTime struct {
 	IsHoliday  int32
 }
 
+type ShopsImage struct {
+	ID       int64
+	ShopID   int64
+	ImageUrl string
+}
+
 type ShopDetail struct {
 	ID                 int64
 	EventID            int64
@@ -76,6 +82,8 @@ type ShopDetail struct {
 }
 
 type ShopsResult []ShopDetail
+type Shops []Shop
+type ShopsImages []ShopsImage
 
 var shopsResult ShopsResult
 var shopResult ShopDetail
@@ -92,10 +100,17 @@ func (ShopsTime) TableName() string {
 	return "shops_time"
 }
 
+func (ShopsImage) TableName() string {
+	return "shops_image"
+}
+
 type IShopModel interface {
 	CountShopsTotal(year int32) (int64, error)
 	FindShops(time *time.Time, userId string, year int32, keywordList []string, searchParams []int32, orderParam int32, latitude, longitude float64) (*ShopsResult, error)
 	FindShop(time *time.Time, userId string, shopId int64) (*ShopDetail, error)
+	FindShopsByYear(year int32) (*Shops, error)
+	UpdateShopsImage(shopID int64, imageURLs []string) error
+	FindShopsImage(year int32) (*ShopsImages, error)
 }
 
 // search types
@@ -335,4 +350,68 @@ func (m *ShopModel) FindShop(time *time.Time, userId string, shopId int64) (*Sho
 	}
 
 	return &shopResult, nil
+}
+
+func (m *ShopModel) FindShopsByYear(year int32) (*Shops, error) {
+	query := m.db.Conn.
+		Model(&Shop{}).
+		Joins("INNER JOIN events ON shops.event_id = events.id").
+		Where("events.year = ?", year).
+		Select("shops.*")
+	var shops Shops
+	res := query.Scan(&shops)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return &shops, nil
+}
+
+func (m *ShopModel) UpdateShopsImage(shopID int64, imageURLs []string) error {
+	err := m.db.Conn.Transaction(func(tx *gorm.DB) error {
+		// shops_imageテーブルの該当レコードを一度削除
+		if err := tx.Exec("DELETE FROM shops_image WHERE shop_id = ?", shopID).Error; err != nil {
+			return err
+		}
+
+		// shops_imageテーブルにレコードを登録
+		shopsImages := make([]ShopsImage, 0, len(imageURLs))
+		for _, imageURL := range imageURLs {
+			shopsImages = append(shopsImages, ShopsImage{
+				ShopID:   shopID,
+				ImageUrl: imageURL,
+			})
+		}
+		if err := tx.Create(&shopsImages).Error; err != nil {
+			return err
+		}
+
+		// shopsテーブルのimage_urlカラムに先頭のURLを登録
+		if err := tx.Model(&Shop{}).
+			Where("id = ?", shopID).
+			Update("image_url", imageURLs[0]).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+	}
+
+	return nil
+}
+
+func (m *ShopModel) FindShopsImage(year int32) (*ShopsImages, error) {
+	query := m.db.Conn.
+		Model(&ShopsImage{}).
+		Joins("INNER JOIN shops ON shops.id = shops_image.shop_id").
+		Joins("INNER JOIN events ON shops.event_id = events.id").
+		Where("events.year = ?", year).
+		Select("shops_image.shop_id, shops_image.image_url")
+
+	var shopsImages ShopsImages
+	res := query.Scan(&shopsImages)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return &shopsImages, nil
 }

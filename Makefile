@@ -27,6 +27,8 @@ db-migrate-up:
 	migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=bcrd&sslmode=disable' -verbose up
 db-migrate-down:
 	migrate -path migrations -database 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?search_path=bcrd&sslmode=disable' -verbose down
+shops-image:
+	docker exec -it bcrd_api sh -c "go run main.go updateShopsImage"
 run:
 	go run main.go
 grpcurl-shops:

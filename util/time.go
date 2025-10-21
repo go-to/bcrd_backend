@@ -1,13 +1,8 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"math"
-	"math/rand"
-	"net/http"
-	"os"
 	"time"
 )
 
@@ -62,40 +57,4 @@ func americanWeekNumber(year, month, day int) int {
 	// 時間から週番号を取得する
 	weeklyNumber := math.Floor((week.Hours() / 24) / 7)
 	return int(weeklyNumber) + 1
-}
-
-func FormatDistance(meter float64) string {
-	if meter < 1000 {
-		return fmt.Sprintf("%.0fm", meter)
-	}
-	km := meter / 1000
-	roundedKm := math.Round(km*10) / 10
-	return fmt.Sprintf("%.1fkm ", roundedKm)
-}
-
-func GetPlaceDetails(client *http.Client, placeId string) (string, error) {
-	mapApiKey := os.Getenv("MAP_API_KEY")
-	placeDetailsApiUrl := os.Getenv("PLACE_DETAILS_API_URL")
-
-	url := fmt.Sprintf("%s?placeid=%s&key=%s", placeDetailsApiUrl, placeId, mapApiKey)
-	res, _ := client.Get(url)
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(res.Body)
-
-	var result map[string]interface{}
-	err := json.NewDecoder(res.Body).Decode(&result)
-	if err != nil {
-		return "", err
-	}
-
-	photos := result["result"].(map[string]interface{})["photos"].([]interface{})
-	randomN := rand.Intn(len(photos) - 1)
-	ref := photos[randomN].(map[string]interface{})["photo_reference"].(string)
-
-	photoURL := fmt.Sprintf("https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=%s&key=%s", ref, mapApiKey)
-	return photoURL, nil
 }

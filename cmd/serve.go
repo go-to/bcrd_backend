@@ -32,6 +32,17 @@ func startServer() {
 	// 環境変数読み込み
 	loadEnv()
 
+	apiPortStr := os.Getenv("API_PORT")
+	apiPort, err := strconv.Atoi(apiPortStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	u := setup()
+	router.New(apiPort, u)
+}
+
+func setup() router.Usecase {
 	// タイムゾーン
 	locationName := os.Getenv("LOCATION_NAME")
 	util.Init(locationName)
@@ -73,17 +84,10 @@ func startServer() {
 		*stampRepository,
 	)
 
-	apiPortStr := os.Getenv("API_PORT")
-	apiPort, err := strconv.Atoi(apiPortStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	u := router.Usecase{
+	return router.Usecase{
 		Shop:  usecase.IShopUsecase(shopUsecase),
 		Stamp: usecase.IStampUsecase(stampUsecase),
 	}
-	router.New(apiPort, u)
 }
 
 func loadEnv() {

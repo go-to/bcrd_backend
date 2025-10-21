@@ -2,11 +2,9 @@ package usecase
 
 import (
 	"fmt"
-	"net/http"
+	"math/rand/v2"
 	"slices"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/go-to/bcrd_backend/repository"
 	"github.com/go-to/bcrd_backend/usecase/input"
@@ -27,6 +25,7 @@ type IShopUsecase interface {
 	GetShopsTotal(in *input.ShopsTotalInput) (*output.ShopsTotalOutput, error)
 	GetShops(in *input.ShopsInput) (*output.ShopsOutput, error)
 	GetShop(in *input.ShopInput) (*output.ShopOutput, error)
+	UpdateShopsImage() error
 }
 
 type ShopUsecase struct {
@@ -125,35 +124,14 @@ func (u *ShopUsecase) GetShops(in *input.ShopsInput) (*output.ShopsOutput, error
 		return &output.ShopsOutput{}, err
 	}
 
-	// PlaceIDで先にループして画像情報を取得
-	var client = &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConns:        200,
-			MaxConnsPerHost:     200,
-			MaxIdleConnsPerHost: 200,
-			IdleConnTimeout:     90 * time.Second,
-			DisableCompression:  false,
-			ForceAttemptHTTP2:   true,
-		},
-		Timeout: 10 * time.Second,
+	shopsImage, err := u.shop.GetShopsImage(year)
+	if err != nil {
+		return &output.ShopsOutput{}, err
 	}
-
-	photoURLsMap := map[int64]string{}
-	stringStream := make(chan string)
-	var wg sync.WaitGroup
-	for _, v := range *shops {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			photoURL, err := util.GetPlaceDetails(client, v.PlaceID)
-			if err != nil {
-				return
-			}
-			stringStream <- photoURL
-		}()
-		photoURLsMap[v.ID] = <-stringStream
+	shopsImageMap := make(map[int64][]string)
+	for _, image := range *shopsImage {
+		shopsImageMap[image.ShopID] = append(shopsImageMap[image.ShopID], image.ImageUrl)
 	}
-	wg.Wait()
 
 	var outputShops []*pb.Shop
 	var latLonList []string
@@ -182,7 +160,13 @@ func (u *ShopUsecase) GetShops(in *input.ShopsInput) (*output.ShopsOutput, error
 		}
 
 		// 画像
-		imageUrl := photoURLsMap[v.ID]
+		imageUrl := v.ImageUrl
+		if _, ok := shopsImageMap[v.ID]; ok {
+			if len(shopsImageMap[v.ID]) > 0 {
+				randomNum := rand.IntN(len(shopsImageMap[v.ID]) - 1)
+				imageUrl = shopsImageMap[v.ID][randomNum]
+			}
+		}
 
 		outputShops = append(outputShops, &pb.Shop{
 			Id:                 v.ID,
@@ -312,4 +296,32 @@ func (u *ShopUsecase) GetShop(in *input.ShopInput) (*output.ShopOutput, error) {
 			IsEventPeriod: isEventPeriod,
 		},
 	}, nil
+}
+
+func (u *ShopUsecase) UpdateShopsImage() error {
+	year, err := u.getDefaultYear()
+	if err != nil {
+		return err
+	}
+	// 全店舗のplace_idを取得
+	shops, err := u.shop.GetShopsByYear(year)
+	if err != nil {
+		return err
+	}
+
+	for _, shop := range *shops {
+		// place_idの情報を基に、Places Details API経由で画像URLを取得
+		imageURLs, err := util.GetPlaceDetails(shop.PlaceID)
+		if err != nil {
+			return err
+		}
+
+		// shops_imageテーブルの画像URLを更新
+		err = u.shop.UpdateShopsImage(shop.ID, imageURLs)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
